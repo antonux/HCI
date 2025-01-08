@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Detection</title>
+  <style>
+    #container {
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+
+    canvas {
+      position: absolute;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .modal {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      z-index: 1000;
+      /* Ensure it appears above other content */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+      /* Semi-transparent background */
+    }
+
+    /* Modal content */
+    .modal-content {
+      background-color: white;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      /* Responsive width */
+      max-width: 900px;
+      /* Max width for landscape fit */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Close button */
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close-btn:hover,
+    .close-btn:focus {
+      color: black;
+      text-decoration: none;
+    }
+
+    /* Modal heading */
+    .modal-content h3 {
+      margin-top: 0;
+      color: #4CAF50;
+      border-bottom: 2px solid #4CAF50;
+      padding-bottom: 5px;
+    }
+
+    /* Input and textarea styling */
+    #profile-form label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    #profile-form input,
+    #profile-form textarea {
+      width: 100%;
+      margin-top: 5px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    #profile-form textarea {
+      resize: vertical;
+      height: 60px;
+    }
+
+    /* Submit button */
+    #profile-form button {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    #profile-form button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1 style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Face Detection</h1>
+  </header>
+
+  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;" id="container">
+    <div>
+      <canvas id="canvas"></canvas>
+      <video id="video-feed" height="480" width="630" autoplay></video>
+    </div>
+    <button id="regist"
+      style="display: none; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color 0.3s ease;"
+      onclick="openModal()">
+      Register
+    </button>
+    <button id="register-button"
+      style="display: none; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color 0.3s ease;">
+      Submit
+    </button>
+
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="profile-form">
+          <h3>Profile Information</h3>
+          <!-- <label for="face_id">Face ID:</label>
+          <input type="number" id="face_id" name="face_id" required /> -->
+
+          <label for="first_name">First Name:</label>
+          <input type="text" id="first_name" name="first_name" maxlength="100" required />
+
+          <label for="last_name">Last Name:</label>
+          <input type="text" id="last_name" name="last_name" maxlength="100" required />
+
+          <label for="middle_name">Middle Name:</label>
+          <input type="text" id="middle_name" name="middle_name" maxlength="100" />
+
+          <label for="age">Age:</label>
+          <input type="number" id="age" name="age" min="0" />
+
+          <label for="gender">Gender:</label>
+          <input type="text" id="gender" name="gender" maxlength="10" />
+
+          <label for="nationality">Nationality:</label>
+          <input type="text" id="nationality" name="nationality" maxlength="100" />
+
+          <label for="religion">Religion:</label>
+          <input type="text" id="religion" name="religion" maxlength="100" />
+
+          <label for="civil_status">Civil Status:</label>
+          <input type="text" id="civil_status" name="civil_status" maxlength="50" />
+
+          <label for="birth_date">Birth Date:</label>
+          <input type="date" id="birth_date" name="birth_date" />
+
+          <label for="phone_number">Phone Number:</label>
+          <input type="text" id="phone_number" name="phone_number" maxlength="15" />
+
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" maxlength="100" />
+
+          <label for="present_address">Present Address:</label>
+          <textarea id="present_address" name="present_address"></textarea>
+
+          <label for="permanent_address">Permanent Address:</label>
+          <textarea id="permanent_address" name="permanent_address"></textarea>
+
+          <h3>Parent Information</h3>
+          <label for="parent_first_name">Parent First Name:</label>
+          <input type="text" id="parent_first_name" name="parent_first_name" maxlength="100" required />
+
+          <label for="parent_last_name">Parent Last Name:</label>
+          <input type="text" id="parent_last_name" name="parent_last_name" maxlength="100" required />
+
+          <label for="parent_middle_name">Parent Middle Name:</label>
+          <input type="text" id="parent_middle_name" name="parent_middle_name" maxlength="100" />
+
+          <label for="parent_phone_number">Parent Phone Number:</label>
+          <input type="text" id="parent_phone_number" name="parent_phone_number" maxlength="15" />
+
+          <h3>Emergency Contact Information</h3>
+          <label for="emergency_first_name">Emergency Contact First Name:</label>
+          <input type="text" id="emergency_first_name" name="emergency_first_name" maxlength="100" required />
+
+          <label for="emergency_last_name">Emergency Contact Last Name:</label>
+          <input type="text" id="emergency_last_name" name="emergency_last_name" maxlength="100" required />
+
+          <label for="emergency_phone_number">Emergency Contact Phone Number:</label>
+          <input type="text" id="emergency_phone_number" name="emergency_phone_number" maxlength="15" />
+
+          <button id="ok-button" onclick="closeModal(); showRegister()">Ok</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+  </footer>
+
+  <script src="./face-api.min.js"></script>
+  <script src="./scripts.js"></script>
+</body>
+
+</html>
